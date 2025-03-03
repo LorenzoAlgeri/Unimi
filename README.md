@@ -21,6 +21,7 @@ Al momento sono presenti i seguenti corsi:
 ### Secondo Anno
 
 - Programmazione II 🖥️
+- Sistemi Operativi ⚙️
 
 
 ### Corsi Opzionali
