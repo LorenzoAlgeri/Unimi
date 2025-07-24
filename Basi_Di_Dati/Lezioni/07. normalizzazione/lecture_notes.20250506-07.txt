@@ -1,0 +1,260 @@
+====
+Si consideri R1:
+R1(person, first_name, last_name, given_name, movie, title, year, character)
+
+X -> Y  cioè Y dipende funzionalmente da X
+movie -> title cioè title dipende funz. da movie
+
+∀ t1,t2 ∊ R1:
+t1[X] = t2[X] -> t1[Y] = t2[Y]
+t1[movie] = t2[movie] -> t1[title] = t2[title]
+
+first_name, last_name -> given_name -- dipendenza non corretta
+title -> movie -- questa dipendenza è valida solo se title è univoco
+
+movie -> title
+movie -> year
+person -> first_name, last_name
+person, movie -> character
+
+regola riflessiva
+X = movie, title
+Y = title 
+movie, title -> title 
+
+regola di arricchimento
+data (movie -> year) allora deduciamo:
+movie, title -> year, title 
+
+regola di decomposizione
+data (person -> first_name, last_name) deduciamo:
+person -> first_name
+person -> last_name
+
+regola di unione 
+date (movie -> year) e (movie -> title) deduciamo:
+movie -> title, year
+
+Le forme normali sono le seguenti
+- BCNF (Boyce-Codd)
+- 3NF
+- 2NF
+- 1NF
+
+Decomporre uno schema di relazione R significa creare due o più relazioni che sostituiscono R
+
+====
+Forma Normale di Boyce-Codd
+
+Consideriamo il caso di R1
+R1(person, first_name, last_name, given_name, movie, title, year, character)
+
+chiave di R1: (person, movie)
+
+dipendenze funzionali su R1:
+movie -> title
+movie -> year
+movie -> title, year (per regola di unione)
+person -> first_name, last_name
+person -> given_name
+person, movie -> character
+
+decomposizione per raggiungere BCNF:
+RA(movie, title, year)(PK:movie)
+RB(person, first_name, last_name, given_name)(PK:person)
+RC(person, movie, character)(PK:person,movie)
+
+====
+Consideriamo un caso alternativo con le seguenti dipendenze: 
+movie -> title
+title -> year
+person -> first_name, last_name
+person -> given_name
+person, movie -> character
+
+la dipendenza (movie -> year) diventa banale perchè derivabile per transitività a partire dalle prime due dipendenze
+
+Normalizzazione di R1:
+RA(movie, title)(PK:movie)
+RB(title, year)(PK:title)
+RC(person, first_name, last_name, given_name)(PK:person)
+RD(person, movie, character)(PK:person,movie)
+
+====
+Consideriamo R2
+R2(movie, person, country)
+La relazione descrive una persona e i film ai quali ha partecipato. Country rappresenta la sede della produzione del film e coincide con il paese di residenza dell'attore durante le riprese
+
+dipendenze: 
+movie -> country
+person -> country
+
+chiave di R2: person, movie 
+
+normalizzazione per BCNF
+RA(movie, country)(PK:movie)
+RB(person, country)(PK:person)
+
+RA 
+movie          | country
+======================== 
+The Machinist  | GBR
+Inception      | USA
+THe DK rises   | USA
+The GG         | USA
+
+RB
+person           |  country
+===========================
+Christian Bale   | GBR
+Marion Cotillar  | USA
+Leo DiCaprio     | USA
+
+
+provo a fare il join fra RA e RB
+select *
+from RA join RB on RA.country = RB.country
+
+RA-RB
+movie           |    person       | country
+===========================================
+The Machinist   | Christian Bale  | GBR
+Inception       | Marion Cotillar | USA
+Inception       | Leo DiCaprio    | USA
+The DK rises    | Marion Cotillar | USA
+The DK rises    | Leo DiCaprio    | USA
+The GG          | Marion Cotillar | USA
+The GG          | Leo DiCaprio    | USA
+
+Siamo in presenza di un loss join (join con perdita). Non è una perdita di record, ma una perdita di consistenza dei dati (ci sono record che non compaiono nella relazione R2)
+
+Regola per verificare se una decomposizione porta a un loss join:
+Data R2 e date RA e RB come decomposizione
+la decomposizione è lossless se valgono le seguenti regole:
+RA∪RB=R2
+RA∩RB=R0 dove R0 è chiave in RA o RB
+
+====
+decomposizione alternativa corretta
+RA1(movie, country)(PK:movie)
+RB1(person, country)(PK:person)
+RC1(person, movie)(PK:person, movie)
+
+RA1 join RC1 ON RA1.movie = RC1.movie JOIN RB1 ON RC1.person = RB1.person 
+
+====
+altra decomposizione alternativa (ma errata)
+RA2(person, country)(PK:person)
+RB2(person, movie)(PK:person, movie)
+
+insert into RB2 values ('Christian Bale', 'The DK rises');
+
+la dipendenza di (movie -> country) è persa. Il join di RA2 e RB2 produce una relazione diversa da quella di partenza
+
+====
+Consideriamo R3
+R3(movie, country, agency)
+La relazione descrive un film con i relativi paesi in cui è stato distribuito e per ciascuno di essi l'agenzia di distribuzione. Si sappia che ogni agenzia è attiva in un solo paese
+R3(movie, country, agency)
+
+Chiave di R3: movie, country
+
+Dipendenze di R3: 
+movie, country -> agency
+agency -> country
+
+Normalizzazione:
+non è possibile raggiungere BCNF perchè non posso decomporre senza perdere (movie, country -> agency) e (agency -> country) viola BCNF
+
+in questo caso raggiungiamo 3NF poichè R3 è già in 3NF. Ecco perchè: 
+(movie, country -> agency) rispetta BCNF
+(agency -> country) rispetta 3NF essendo country (attributo A) parte della chiave di R3
+
+====
+Consideriamo R4
+La relazione descrive l'associazione fra attori e film riportando la data di nascita dell'attore
+R4(person, movie, birthdate)
+
+chiave di R4? (person, movie)
+
+quali sono le dipendenze funzionali su R4?
+person -> birthdate
+
+In quale forma normale siamo? non siamo in BCNF e neppure in 3NF
+
+Decomponiamo R4 in (questa decomposizione soddisfa BCNF):
+RA(person, birthdate)(PK:person)
+RB(person, movie)(PK:movie, person)
+
+====
+Consideriamo R5
+La relazione descrive il luogo di nascita di una persona in termini di città e paese dove le città hanno nome univoco
+R5(person, city, country)
+
+chiave di R5: person 
+
+dipendenze su R5:
+person -> city
+city -> country 
+
+forma normale? siamo in 2NF (la relazione non ha chiave composta e non soddisfa 3NF a causa di city -> country)
+
+decomposizione:
+RA(person, city)(PK:person)
+RB(city, country)(PK:city)
+
+Considerazioni
+applico le regole di inferenza e deduco le seguenti dipendenze:
+person -> country (regola transitiva)
+person -> city, country (regola di unione)
+
+Se queste ultime dipendenze sono prioritarie, la relazione R5 non può essere decomposta senza perdere la dipendenza (person -> city, country)
+
+====
+Riprendiamo il caso di R1:
+R1(person, first_name, last_name, given_name, movie, title, year, character)
+
+chiave di R1: person, movie 
+
+movie -> title
+movie -> year
+movie -> title, year (per regola di unione)
+person -> first_name, last_name
+person -> given_name
+person, movie -> character
+
+La relazione è in 1NF.
+
+decomposizione in BCNF:
+RA(movie, title, year)(PK:movie)
+RB(person, first_name, last_name, given_name)(PK:person)
+RC(person, movie, character)(PK:person,movie)
+
+====
+Consideriamo la relazione 9.11
+Un giocatore può giocare in una sola squadra (o nessuna).
+Un allenatore può allenare una sola squadra (o nessuna).
+Una squadra ha un solo allenatore.
+Una squadra ha diversi giocatori.
+Una squadra appartiene a una sola città.
+R(squadra, allenatore, città, giocatore)
+
+chiave di R: giocatore
+
+dipendenze di R:
+squadra -> allenatore
+allenatore -> squadra
+giocatore -> squadra
+squadra -> città 
+
+Siamo in 2NF.
+
+Decompongo e ottengo uno schema in 3NF (non posso arrivare a BCNF a causa di allenatore -> squadra)
+RA(squadra, allenatore)(PK:squadra)
+RB(giocatore, squadra)(PK:giocatore)
+RC(squadra, città)(PK:squadra)
+
+Altra decomposizione ancora in 3NF:
+RA(squadra, allenatore, città)(PK:squadra)
+RB(giocatore, squadra)(PK:giocatore)
+

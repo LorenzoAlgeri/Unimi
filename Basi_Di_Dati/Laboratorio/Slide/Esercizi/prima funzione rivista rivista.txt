@@ -1,0 +1,31 @@
+﻿-- versione rivista di get_movie_top_rating_revised nella quale si restituisce anche il campo id del film per migliorare la leggibilità dell'output
+CREATE TYPE movie_top_rating AS (movie_id varchar(10), top_rating numeric);
+-- per modificare una funzione cambiando la signature è necessario eliminare la precedente versione della funzione e ricrearla
+-- DROP FUNCTION get_movie_top_rating_revised (varchar);
+
+
+
+
+
+CREATE OR REPLACE FUNCTION get_movie_top_rating_revised(varchar(200)) 
+RETURNS SETOF movie_top_rating AS $$
+	DECLARE
+		top_rating movie_top_rating;
+	BEGIN
+		FOR top_rating IN SELECT movie.id, max(score) 
+		FROM movie INNER JOIN rating ON movie.id = rating.movie 
+		WHERE trim(lower(official_title)) = trim(lower($1)) GROUP BY movie.id
+		LOOP
+			RETURN NEXT top_rating;
+		END LOOP;		
+	END;	
+$$ language plpgsql;
+
+SELECT * FROM get_movie_top_rating_revised('inception');
+SELECT * FROM get_movie_top_rating_revised('The Man Who Knew Too Much');
+
+
+
+
+-- si noti che l'output di una funzione può essere combinato in una query
+SELECT id, official_title, budget, length FROM get_movie_top_rating_revised('The Man Who Knew Too Much') AS top_movie_rating INNER JOIN movie ON top_movie_rating.movie_id = movie.id;

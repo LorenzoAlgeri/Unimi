@@ -1,0 +1,15 @@
+﻿CREATE OR REPLACE FUNCTION get_movie_top_rating_revised(varchar(200)) RETURNS SETOF numeric AS $$
+	DECLARE
+		top_rating rating.score%TYPE;
+	BEGIN
+		FOR top_rating IN 
+		SELECT max(score) FROM movie INNER JOIN rating ON movie.id = rating.movie 
+		WHERE trim(lower(official_title)) = trim(lower($1)) GROUP BY movie.id
+		LOOP
+			RETURN NEXT top_rating;
+		END LOOP;		
+	END;	
+$$ language plpgsql;
+
+SELECT * FROM get_movie_top_rating_revised('inception');
+SELECT * FROM get_movie_top_rating_revised('The Man Who Knew Too Much');

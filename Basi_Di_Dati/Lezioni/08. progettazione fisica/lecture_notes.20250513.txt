@@ -1,0 +1,56 @@
+Esempio di query con criterio di ricerca puntuale
+select * 
+from imdb.country 
+where iso3 = 'ABW';
+
+Esempio di query con criterio di ricerca su intervallo
+select * 
+from imdb.country 
+where iso3 between 'ABW' and 'ALB';
+
+
+Esempio 1 sugli indici primari
+==============================
+Record di dimensione fissa R = 100 byte.
+File con r = 30.000 record e blocchi B = 1024 byte.
+Quante voci conterrà l’indice?
+
+Calcoliamo il blocking factor (cioè quanti record sono memorizzati in ogni blocco):
+bf = floor(B/R) = floor(1024/100) = 10 record per blocco 
+
+Quanti blocchi sono occupati dai record della tabella:
+#blocchi = 30000 / 10 = 3000
+
+Quante voci di indice primario mi servono per gestire 3000 blocchi?
+In un indice primario, ho bisogno di una chiave per ogni blocco (che punta al primo record del blocco), quindi posso gestire 3000 blocchi con altrettante voci di indice: 3000
+
+Esempio 2
+=========
+I valori della pseudochiave dell’indice occupano 3 byte.
+Il puntatore al blocco è un indirizzo di 6 byte.
+Quanti blocchi occupa l’indice?
+
+Ogni record dell'indice occupa 3+6 = 9 byte (dimensione del record dell'indice):
+bf = floor(B/R) = floor(1024 / 9) = 113 record
+
+Quanti blocchi mi servono? considero che l'indice contiene 3000 voci:
+#blocchi = 3000 / 113 = 27 blocchi
+
+Esempio 3
+=========
+Consideriamo un file che abbia r = 30.000 record di dimensione R = 100 byte e B = 1024 byte per blocco
+Quanti accessi sarebbero mediamente necessari con una ricerca lineare su un file non ordinato?
+Quanti accessi sarebbero necessari con una ricerca binaria assumendo una dimensione di R = 15 byte per ciascuna voce dell’indice?
+
+In media ho bisogno di 1500 accessi assumendo che la chiave di ricerca sia equiprobabile fra tutti i valori.
+
+Per sapere il numero di accessi, abbiamo bisogno di sapere quanto è grande l'indice, cioè quanti blocchi occupa:
+bf = floor(B/R) = floor(1024/15) = 68 record per blocco, cioè voci di indice per blocco
+
+quanti blocchi per memorizzare l'indice
+#blocchi = ceil(30000/68) = 442 blocchi
+
+#accessi = ceil(log2 442) = 9 
+
+in verità gli accessi sono 10: 9 per interrogare l'indice + 1 per caricare il record cercato 
+

@@ -1,0 +1,112 @@
+-- schema relazionale di una base di dati (nell'esempio la base di dati consiste di 4 relazioni/tabelle)
+-- l'asterisco denota un attributo opzionale (che può essere nullo)
+-- in assenza di asterisco, l'attributo va considerato NOT NULL 
+movie(id, title, year, length)
+person(id, firstname*, lastname*, givenname, birthdate*, deathdate*, alive(Y/N))
+genre(name)
+country(name, abbreviation)
+
+-- per evitare ambiguità, per indicare un attributo si può usare la notazione puntata e prefiggere il nome della tabella 
+genre.name 
+country.name
+
+-- l'attributo alive può essere usato per distinguere il caso del valore null di un attributo dovuto a valore sconosciuto (ma esistente), dal caso di un attributo null dovuto a valore mancante
+givenname   deathdate       alive
+John        2025-03-05       N 
+Alice       2025-03-04       Y  --> violazione di un vincolo di integrità dei dati: non è possibile che una persona sia viva e abbia la data di decesso
+Marta       [NULL]           N  --> Marta è deceduta, ma non conosciamo la data di decesso
+Bob         [NULL]           Y  --> Bob non è deceduta, quindi il valore di deathdate è mancante
+
+-- vincolo di integrità: quando deathdate non è nullo, il valore di alive deve essere No 
+check ((deathdate IS NOT NULL AND alive = True) OR (deathdate IS NULL))
+
+-- consideriamo la relazione rating e i vincoli di integrità che potrebbero essere definiti sullo schema
+rating(check_date, source, movie, scale, votes, score)
+
+-- vincoli di integrità:
+check(score>=0 AND score <= scale)
+check(scale in (5, 10, 100))
+
+-- vincoli di chiave:
+--- superchiave (SK)
+---> una qualsiasi combinazione di attibuti che garantisce l'univocità dei valori nelle ennuple della relazione
+---> gli attributi K della relazione R, sono superchiave se non esistono due tuple t1, t2 in R per le quali t1[K] = t2[K]
+
+--- chiave (K)
+---> una chiave è una superchiave minimale
+---> K è un insieme di attributi superchiave di R. K è anche chiave di R se per un qualunque insieme S ⊆ K, possono esistere due tuple di R tali che t1[K-S] = t2[K-S]
+---> in altri termini, K è chiave quando nessun attributo di K può essere eliminato senza perdere la proprietà di superchiave
+---> In SQL le chiavi sono definite con il vincolo UNIQUE
+
+--- chiave primaria (PK)
+---> vincolo di entity integrity
+---> una chiave primaria è una chiave sulla quale non sono possibili valori NULL
+---> ogni relazione ha una e una sola chiave primaria 
+---> In SQL le chiavi primarie sono definite con il vincolo PRIMARY KEY
+
+-- Esempi
+movie(id, title, year, length, budget, plot)
+id, title, year, length, budget, plot -> SK 
+id -> SK, K, PK 
+id, title -> SK
+id, year -> SK
+id, title, year -> SK 
+title, year, length, budget, plot -> SK 
+title, year, length -> SK, K
+
+-- queste tuple di movie, violana chiave title, year, length? 
+-- no perchè il valore null non è un valore
+movie(title, year, length)
+('The batman', 2023, 145)
+('The batman', [NULL], 145)
+('The batman', 2023, [NULL])
+
+-- questi vincoli denotano che la terna title, year, length è una chiave primaria candidata
+UNIQUE(title, year, length)
+NOT NULL(title),
+NOT NULL(year),
+NOT NULL(length)
+
+-- questi vincoli denotano che l'attributo id è una chiave primaria candidata
+NOT NULL(id)
+UNIQUE(id)
+PRIMARY KEY(id)
+
+country(iso3, name)
+iso3 -> SK, K, PK 
+iso3, name -> SK
+name -> SK, K 
+
+-- vincoli su country
+NOT NULL(iso3)
+NOT NULL(name)
+PRIMARY KEY(iso3)
+
+cinema(name, city, address, phone)
+name, city, address, phone -> SK
+name, city, address -> SK 
+name, city -> SK, K 
+name, address -> SK
+address -> SK, K 
+
+-- vincoli su cinema
+NOT NULL(name)
+NOT NULL(city)
+NOT NULL(address) 
+PRIMARY KEY(address)
+
+-- integrità referenziale
+movie(id, title, year, length, budget, plot)
+rating(check_date, source, movie, scale, votes, score)
+
+vincolo di integrità referenziale interessa due relazione R1, R2
+R1 -> relazione che referenzia (nell'esempio è rating)
+R2 -> relazione referenziata (nell'esempio è movie)
+
+R1 contiene un attributo (o insieme di attributi) X detto chiave esterna (o foreign key - FK) (nell'esempio X=rating.movie)
+R2 contiene un attributo (o insieme di attributi) Y detto attributo referenziato che è chiave per R2 (nell'esempio Y= movie.id)
+
+
+
+
+

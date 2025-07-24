@@ -1,0 +1,25 @@
+Si consideri i dati nel foglio elettronico crew.xlsx
+
+I generi di un film sono memorizzati come lista di valori separati da virgola in un'unica cella.
+Come gestire in modo più efficace l'associazione fra movie e genre?
+
+soluzione 1
+aggiungo una colonna true/false per ogni genere: poco efficace perchè la struttura della tabella deve cambiare ogni volta che si aggiunge un nuovo possibile genere. Inoltre ci sono molti valori nulli (spasità dei dati)
+
+soluzione 2
+si aggiunge una tabella per memorizzare i generi e una per memorizzare le associazioni fra movie e genre (soluzione canonica per gestire le relazioni many-to-many)
+
+movie(id, title, year, length)
+
+genre(name)
+
+movie_genre(name_genre, id_movie)
+
+--
+
+si vuole creare una tabella per morizzare le recensioni associate ai film. Una recensione è fatta da un soggetto (rivista specializzata, il critico cinematografico, ...), in una certa data e riguarda uno specifico film. La recensione valuta la pellicola con un punteggio numerico che può essere espresso su una scala variabile ( 1-5, 1-10, 1-100 )
+
+rating(score, scale, description, review_date, reviewer_name, id_movie)
+
+
+

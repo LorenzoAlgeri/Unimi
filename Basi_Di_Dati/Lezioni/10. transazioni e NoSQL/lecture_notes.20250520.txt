@@ -1,0 +1,82 @@
+-- esempio di transazione
+create table imdb.country_area (
+    country char(3) primary key references imdb.country(iso3),
+    sqkm double precision
+)
+
+insert into imdb.country_area values ('ITA', 301340.0);
+insert into imdb.country_area values ('FRA', 643801.0);
+
+-- l'uso di transazioni permette di ripristinare i valori iniziali dei paesi ITA e FRA (ROLLBACK) quando l'inserimento della nuova tupla genera un errore per violazione di chiave esterna
+begin transaction;
+update imdb.country_area 
+set sqkm = sqkm -1000 
+where country = 'ITA';
+update imdb.country_area 
+set sqkm = sqkm -1000 
+where country = 'FRA';
+insert into imdb.country_area values ('FRI', 2000);
+commit;
+
+-- esempio di lost update
+U1: x:= read(X) +100
+U2: x:= read(X) +200
+U1: write(X) -- 150
+U2: write(X) -- 250
+
+-- in un sistam dotato del concetto di transazione, la situazione sopra descritta non è possibile perchè le transazioni lavorano in isolamento:
+U1: x:= read(X) +100
+U1: write(X) -- 150
+U2: x:= read(X) +200
+U2: write(X) -- 350
+
+-- dirty read
+U1: x:= read(X) +100
+U1: write(X) -- 150
+U2: x:= read(X) +200
+U2: write(X) -- 350
+U1: error -> cancel
+
+-- incorrect summary
+U2: sum:= 0
+U1: x := read(X) +100
+U1: write(X)
+U2: sum := sum + read(X)
+U2: sum := sum + read(Y)
+U1: y := read(Y) +200
+U1: write(Y)
+
+-- concetto di consistenza delle transazioni IMMEDIATE/DEFERRED
+
+-- consideriamo il nostro imdb
+-- vincolo: una persona (tabella person) deve essere coinvolta in almeno un film (tabella crew)
+person(id, given_name, ...)
+crew(person, movie, p_role, character)
+
+-- come verifico che ogni person compaia in almeno un film? devo scrivere un trigger
+-- se inserisco le seguenti operazioni di insert in una transazione DEFERRED, il vincolo del trigger viene verificato al termine della transazione e risulta soddisfatto quindi la consistenza è preservata
+-- una verifica IMMEDIATE della consistenza avrebbe comportato un errore perchè il trigger sarebbe stato verificato dopo la insert su person e non sarebbe stato soddisfatto
+insert into person values ('489494', 'Pippo');
+insert into crew values ('489494', '848484', 'actor', 'Pippo');
+
+-- esempi di query mongodb
+-- trovare i film prodotti nel 2010
+db.movie.find(
+    {
+        year: "2010"
+    }
+);
+
+-- trovare i film prodotti nel 2010 e mostrare solo i dati relativi al titolo e alla durata
+db.movie.find(
+    {
+        year: "2010"
+    },
+    {
+        title: 1,
+        length: 1,
+        year: 1,
+    }
+).pretty();
+
+-- esplorare l'aggregation framework di mongodb per maggiori dettagli sulle potenzialità

@@ -1,0 +1,59 @@
+-- selezionare il titolo delle pellicole del 2010
+-- movie(id, official_title, year, budget, length, plot)
+SELECT id, official_title, year
+from imdb.movie 
+where year = '2010';
+
+-- selezionare i record delle pellicole con titolo INTERSTELLAR
+select *
+from imdb.movie 
+where official_title = 'Interstellar';
+
+-- superare il problema del "case"
+-- soluzione A: funzioni lower/upper
+select *
+from imdb.movie 
+where lower(official_title) = 'interstellar';
+
+-- soluzione B: usare ilike
+select *
+from imdb.movie 
+where official_title ilike 'interstellar';
+
+-- superare il problema degli spazi bianchi all'inizio e alla fine di una stringa
+-- trim - ltrim - rtrim
+select *
+from imdb.movie 
+where trim(official_title) ilike 'interstellar';
+
+-- selezionare pellicole che hanno "murder" nel titolo
+-- operatore like
+-- %: segnaposto che indica una stringa di qualsiasi lunghezza
+-- _: segnaposto che indica una stringa di esattamente 1 carattere
+select * 
+from imdb.movie 
+where (official_title ilike '%murder%') and not (official_title ilike '%murder') and not (official_title ilike 'murder%');
+-- soluzione alternativa
+select * 
+from imdb.movie 
+where (official_title ilike '% murder %')
+
+-- selezionare le pellicole nel cui titolo compaiano happy e family in qualsiasi posizione 
+select * 
+from imdb.movie 
+where (official_title ilike '%happy%family%') or (official_title ilike '%family%happy%')
+-- soluzione alternativa
+select * 
+from imdb.movie 
+where (official_title ilike '%happy%') and (official_title ilike '%family%')
+
+-- selezionare le persone che hanno 'Mark' nel nominativo
+select * 
+from imdb.person 
+where given_name ilike '%mark%';
+
+
+-- selezionare le persone che hanno 'Mark' nel nome
+
+
+-- selezionare le persone che si chiamano 'Mark' di cognome

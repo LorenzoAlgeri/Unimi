@@ -1,0 +1,66 @@
+Persona
+- nome
+- cognome
+- CF*
+- email^
+
+
+STUDENTE
+- CDL -->CDL.CODICE
+- matricola*
+- persona --> persona.CF 
+
+PROFESSORE
+- persona --> persona.CF 
+- ruolo (RTD- PA - PO)*
+- MATRICOLA* unique
+- data assunzione 
+- cessazione ruolo
+- 
+
+CDL
+- nome
+- durata
+- tipologia (triennale/magistrale)
+- CODICE*
+
+INSEGNAMENTO
+- nome
+- CODICE*
+- anno 
+- 
+semestre
+- CFU
+- CDL --> CDL.CODICE
+
+
+insegnato
+- insegnamento.codice*
+- professore.matricola*
+- da
+- a
+
+
+
+ESAME
+- data
+- tipo 
+- --> insegnamento.codice
+- --> professore.matricola
+- data inizio
+- data fine
+- aula
+- codice*
+
+
+Iscrizioni
+- --> studente.matricola *
+- --> esame.codice*
+- presenza 
+- ritirato
+- voto
+
+
+PROPEDEUTICITA  
+ins1 -->insegnamento.codice
+ins2 -->insegnamento.codice

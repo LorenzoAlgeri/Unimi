@@ -1,0 +1,16 @@
+Esempio di prodotto cartesiano
+
+
+Si considerino i seguenti domini e si costruisca il prodotto cartesiano
+Si mostri un esempio di relazione sui domini dati
+
+
+Esempio 1
+D1 = {a, b} 
+D2 = {x, y, z} 
+
+
+Esempio 2
+D1 = {Milano, Roma} 
+D2 = {Lombardia, Lazio, Piemonte}
+D3 = {Nord, Centro, Sud} 

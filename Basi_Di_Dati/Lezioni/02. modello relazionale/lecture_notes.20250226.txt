@@ -1,0 +1,57 @@
+Modello relazionale
+
+Si considerino i seguenti domini (cioè insiemi di possibili valori sui quali sono definiti due attributi)
+
+D1 = { cane, gatto }
+D2 = { bianco, nero, marrone }
+
+Una relazione R (tabella) è definita come sottoinsieme del prodotto cartesiano dei domini degli attributi sui quali è definita la relazione R
+R ⊆ D1 x D2
+
+animale(tipo, colore)
+
+prodotto cartesiano della relazione animale
+tipo    |  colore
+=====================
+cane        bianco
+cane        marrone
+cane        nero
+gatto       bianco
+gatto       marrone
+gatto       nero
+
+Esempio 2
+D1 = { the godfather, the batman }
+D2 = { crime, comedy, action }
+
+movie( title, genre )
+
+the godfather, crime
+the godfather, comedy
+the godfather, action
+the batman, crime
+the batman, comedy
+the batman, action
+
+
+Ipotizziamo una relazione movie con relativi domini (tipi di dato)
+movie(title, year, length)
+movie(varchar(100), char(4), integer)
+movie(D1, D2, D3)
+
+R(D1, D2, D3) -> definizione della relazione in base ai domini degli attributi
+R(A1, A2, A3) -> definizione della relazione in base al nome degli attributi (schema)
+
+una tupla in una relazione è un record i cui valori sono posizionalmente coerenti con i domini della relazione
+t(d1, d2, d3) -> d1 ∊ D1, d2 ∊ D2, d3 ∊ D3
+
+t[Ak] -> questo denota il valore dell'attributo Ak nella tupla/record t
+t[A2] -> d2
+
+Schema di una base di dati
+BD = { R1(X1), R2(X2), ..., Rn(Xn) }
+
+X1 = A11, ..., A1k
+...
+Xn = An1, ..., Anh
+

@@ -22,13 +22,11 @@ Al momento sono presenti i seguenti corsi:
 
 - Programmazione II 🖥️
 - Sistemi Operativi ⚙️
-
+- Basi Di Dati 🗄️
 
 ### Corsi Opzionali
 
 - Editoria Digitale 📰
-
-
 
 ### Note legali
 

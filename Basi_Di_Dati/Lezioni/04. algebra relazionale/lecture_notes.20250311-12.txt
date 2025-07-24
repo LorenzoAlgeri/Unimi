@@ -1,0 +1,217 @@
+algebra relazionale: linguaggio di interrogazione procedurale che definisce le operazioni necessarie per estrarre dati da una o più relazioni di un database
+
+movie(id, title, year, length, plot)
+rating(check_date, source, movie, score, scale, votes)
+
+esempio di interrogazione: trovare il titolo delle pellicole prodotte nel 2010
+
+l'algebra prevede
+- operatori unari: proiezione (𝛑), selezione (𝛔), ridenominazione (𝛒)
+- operatori binari insiemistici: unione, intersezione, sottrazione
+- operatori binari join: theta join, equijoin, naturaljoin
+
+
+-- unione: date due relazioni R1 e R2, l'operatore di unione restituisce gli elementi appartenenti a R1 o R2
+R1 ∪ R2 = { r1 ∈ R1 ∨ r2 ∈ R2}
+
+-- intersezione: date due relazioni R1 e R2, l'operatore di intersezione restituisce gli elementi appartenenti a R1 e R2
+R1 ∩ R2 = { r1 ∈ R1 ∧ r2 ∈ R2}
+
+-- differenza: date due relazioni R1 e R2, l'operatore di differenza restituisce gli elementi appartenenti a R1 e non appartenenti a R2
+R1 - R2 = { r1 ∈ R1 ∧ r2 ∉ R2}
+
+-- condizioni per applicare unione/intersezione/sottrazione a R1(X) e R2 (Y)
+--- il grado di grado(R1) = grado(R2)
+--- dom(x_i) = dom(y_i) per ogni x_i ∈ R1, y_i ∈ R2
+
+
+-- esempio di sottrazione:
+-- trovare le pellicole del 2010 che non sono thriller 
+--- movie(id, title, year)
+--- genre(movie, genre)
+
+-- relazione R1: una relazione con grado 1 che contiene l'attributo movie.id e i record dei movie prodotti nell'anno 2010
+
+-- relazione R2: una relazione con grado 1 che contiene l'attributo genre.movie delle pellicole thriller
+
+--- R1 - R2 fornisce il risultato
+
+-- esempio di unione: trovare le pellicole che sono di genere thriller o crime
+
+-- esempio di intersezione: trovare le pellicole che sono di genre comedy e romance
+
+
+-- operatore di selezione (𝛔): 𝛔(p) R
+esegue una selezione delle ennuple della relazione R restituendo una relazione risultato che contiene le ennuple di R che soddisfano il predicato p
+--- può utilizzare operatori booleani: AND, OR, NOT
+
+-- trovare le pellicole del 2010
+𝛔(year= '2010')  movie
+
+-- trovare le pellicole prodotte fra il 2010 e il 2020
+𝛔(year => '2010' ∧ year <= '2020')  movie
+
+
+-- operatore di proiezione (𝛑): 𝛑(x) R
+esegue una selezione degli attributi di R restituendo una relazione risultato che contiene solo gli attributi x di R
+
+-- trovare le pellicole del 2010 che non sono thriller 
+R1 = 𝛑(id) [𝛔(year= '2010')  movie]
+R2 = 𝛑(movie) [𝛔(genre='thriller') genre]
+risultato = R1 - R2
+--- soluzione con un'unica espressione:
+[𝛑(id) [𝛔(year= '2010')  movie]] - [𝛑(movie) [𝛔(genre='thriller') genre]]
+
+
+-- trovare le pellicole che sono di genre comedy e romance
+mv_comedy = 𝛑(movie) [𝛔(genre='comedy') genre]
+mv_romance = 𝛑(movie) [𝛔(genre='romance') genre]
+risultato = mv_comedy ∩ mv_romance
+
+-- soluzione alternativa? no: le seguenti sono soluzioni errate!
+S1 = 𝛑(movie) [𝛔(genre='comedy' ∧ genre='romance') genre]
+S2 = 𝛑(movie) [𝛔(genre='comedy' ∨ genre='romance') genre]
+
+
+-- trovare le persone che hanno interpretato come attore il personaggio 'dexter':
+person(id, given_name, birth_date, death_date)
+crew(movie, person, role, character)
+crew.person -> FK -> person.id
+𝛑(person) [𝛔(character='dexter' ∧ role='actor') crew]
+
+-- soluzione ottimizzata
+𝛑(person) [𝛔(character='dexter') [𝛔(role='actor') crew] ]
+
+-- operazioni di join
+-- trovare il nome delle persone che hanno interpretato come attore il personaggio 'dexter'
+
+-- operazione preliminare al join: prodotto cartesiano
+Date le relazioni R1(X) e R2(Y) il prodotto cartesiano R1 x R2 restituisce una relazione risultato definita su XY popolata con ogni possibile combinazione delle ennuple di R1 e R2
+R1(A, B)
+R2(C, D)
+
+R1 
+A  |  B
+a1    b1
+a2    b2
+
+R2
+C  |  D
+c1    d1
+c2    d2
+c3    d3
+
+R1 x R2 = (A, B, C, D)
+
+A  |  B  |  C  |  D
+a1    b1    c1    d1
+a1    b1    c2    d2
+a1    b1    c3    d3
+a2    b2    c1    d1
+a2    b2    c2    d2
+a2    b2    c3    d3  
+
+
+movie(id, title)
+genre(movie, genre)
+
+
+movie
+m1    batman
+m2    spiderman
+
+
+genre
+m1    action
+m1    comics
+m2    dark
+
+movie x genre = (id, title, movie, genre)
+
+id   |   title   |   movie  |   genre
+m1      batman        m1         action   ***  movie.id = genre.movie
+m1      batman        m1         comics   ***  movie.id = genre.movie
+m1      batman        m2         dark
+m2      spiderman     m1         action
+m2      spiderman     m1         comics
+m2      spiderman     m2         dark     ***  movie.id = genre.movie
+
+-- l'operazione di theta join ⋈ è una selezione sul risultato del prodotto cartesiano in base a una condizione theta Θ
+
+Risultato join = R1 ⋈Θ R2
+
+R1(A, B)
+R2(C, D)
+
+join = R1 ⋈(A>=C) R2
+
+R1
+1  | b1
+2  | b2
+
+R2
+1  | d1
+2  | d2
+3  | d3
+
+A   |   B    |   C   |   D
+1       b1       1       d1  ** inclusa nel join perchè A>=C
+1       b1       2       d2  
+1       b1       3       d3
+2       b2       1       d1  ** inclusa nel join perchè A>=C
+2       b2       2       d2  ** inclusa nel join perchè A>=C
+2       b2       3       d3
+
+
+-- quando la condizione di theta join è un'uguaglianza si parla di equijoin
+
+trovare il titolo delle pellicole con i rispettivi generi
+risultato = 𝛑(id, title, genre) [movie ⋈(movie.id = genre.movie) genre]
+
+-- restituire il nome delle persone nate dopo il 2000 che recitano in film thriller
+movie(id, title)
+genre(movie, genre)
+crew(person, movie)
+person(id, given_name, birth_date)
+
+person_2000 = 𝛑(id, given_name) [𝛔(birth_date >= '2001-01-01') person]    
+--schema: person_2000(id, given_name)
+
+movie_thriller = 𝛑(movie) [𝛔(genre='thriller') genre]
+--schema: movie_thriller(movie)
+
+person_2000_crew = 𝛑(id, given_name, movie) person_2000 * 
+[𝛒(id<-person) crew ]
+--schema: person_2000_crew(id, given_name, movie)
+
+risultato = 𝛑(id, given_name) [person_2000_crew * movie_thriller]
+--schema: risultato(id, given_name, movie)
+
+
+-- join naturale: equijoin che considera l'uguaglianza di tutti gli attributi con il medesimo nome nelle due relazioni
+
+
+R1(A, B)
+R2(B, C)
+
+R1 * R2(A, B, C)
+
+-- operazione di ridenominazione (𝛒): 𝛒(x->y) R
+la ridenominazione cambia il nome di un attributo x della relazione R. denominandolo y
+
+R1(A, B, C)
+𝛒(C->D) R1 --  R1(A, B, D)
+
+
+-- ulteriori esercizi (si veda lo schema delle relazioni nel db IMDB)
+-- trovare il titolo delle pellicole con valutazione (rating) maggiore di 8
+
+-- trovare le pellicole thriller con valutazione sopra 8 su scala 10 (verificare entrambe le condizioni)
+
+-- trovare il nome dei registi di film thriller
+
+-- trovare i film le cui recensioni sono SEMPRE/TUTTE superiori a 8 
+
+-- trovare le pellicole distribuite (released) sia in USA sia in FRA
+
+-- trovare le pellicole che NON sono prodotte in GBR

@@ -1,0 +1,14 @@
+﻿
+
+CREATE OR REPLACE FUNCTION get_movie_top_rating (varchar(200)) RETURNS numeric AS $$
+    DECLARE
+        top_rating rating.score%TYPE;
+    BEGIN
+      SELECT max(score)INTO top_rating  FROM movie INNER JOIN rating 
+		ON movie.id = rating.movie 	WHERE trim(lower(official_title)) = trim(lower($1));
+        RETURN top_rating;
+    END;
+$$ LANGUAGE plpgsql;
+
+-- verificare il funzionamento con trailing blank e differenti capital letters
+SELECT * FROM get_movie_top_rating('inception');

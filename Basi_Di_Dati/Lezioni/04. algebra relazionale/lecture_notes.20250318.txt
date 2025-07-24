@@ -1,0 +1,256 @@
+Operatore di divisione 
+
+Date due relazioni R(XY) e S(Y) la relazione risultato di R÷S(X) è definita come segue:
+R÷S(X) = { t1 su X | ∀ t2 ∈ S, ∃ t ∈ R con t[X]=t1 ∧ t[Y]=t2 }
+
+- esempio di uso della divisione. Si considerino le seguenti relazioni
+movie_production(name, country)
+country(name)
+
+la divisione restituisce le pellicole di movie_production che sono state prodotte in tutti i paesi di country
+
+Esempio di divisione
+
+R
+==============
+a  |  b  |  c
+==============
+a1   b1     c1
+a2   b1     c2
+a1   b2     c3
+a1   b2     c1
+
+
+S
+====
+b
+====
+b1
+b2
+
+
+R÷S
+====
+a   |    c
+===========
+a1      c1
+
+
+Esercizio:
+trovare titolo e anno dei film che sono thriller, drama e action
+movie(id, title, year)
+genre(movie, genre)
+
+G = σ(genre= 'thriller' or genre='action' or genre = 'drama') genre
+-- sintassi alternativa
+G = σ(genre in ('thriller', 'action', 'drama')) genre
+
+-- rinomino movie in G
+H = ρ(movie->id) G
+
+-- join naturale fra movie e H
+J = movie * H 
+
+risultato(id, title, year) = J ÷ [ π(genre) G ] 
+
+
+
+movie 
+=======================
+id   | title   |   year
+=======================
+1       m1         2010
+2       m2         2011
+
+
+G
+======================
+id     |   genre
+======================
+1          thriller
+1          drama
+2          thriller
+2          drama
+2          action
+
+
+J 
+=====================================
+id   | title   |   year   | genre
+=====================================
+1       m1          2010     thriller
+1       m1          2010     drama
+2       m2          2011     thriller
+2       m2          2011     drama
+2       m2          2011     action
+
+
+π(genre) G
+======================
+genre
+======================
+thriller
+drama
+action
+
+
+risultato
+===========================
+id    |   title   |   year
+===========================
+2          m2         2011
+
+
+-- soluzione alternativa:
+-- A: π(movie) [ σ(genre= 'thriller') genre ]
+-- B: π(movie) [ σ(genre= 'drama') genre ]
+-- C: π(movie) [ σ(genre= 'action') genre ]
+-- risultato = A ∩ B ∩ C
+
+-- questa soluzione alternativa funziona perchè i generi di interesse sono noti a priori. La divisione è utile (e non sostituibile) quando il contenuto della relazione S al denominatore non è noto a priori
+
+
+================
+Soluzione ad esercizi del giorno 20250312
+================
+-- trovare i film le cui recensioni sono SEMPRE/TUTTE superiori a 8
+rating(movie, source, check_date, scale, score, votes)
+movie(id, title, year)
+
+-- questa soluzione non è corretta: un movie con valutazioni a volte sopra e a volte sotto la soglia viene erroneamente inserito nel risultato
+π(movie) [σ(score>8) rating]
+
+-- soluzione corretta
+-- A: seleziono tutte le ennuple che hanno valutazione <= 8 (complemento della condizioni richiesta nell'esercizio)
+A: π(movie) [σ(score<=8) rating]
+
+-- restituisco le pellicole che non rientrano in A 
+risultato: [π(movie) rating]  - A
+
+
+-- trovare le pellicole che NON sono prodotte in GBR
+produced(movie, country)
+
+-- soluzione errata (si veda la motivazione dell'esercizio precedente)
+π(movie) [σ(country<>'GBR') produced]
+
+-- soluzione corretta
+A: π(movie) [σ(country='GBR') produced]
+risultato: [π(id) movie] - A 
+
+
+===============
+Esercizi dalle slide
+===============
+
+-- Trovare il nome dei politici che non hanno governato città con più di 500K abitanti
+
+-- A: seleziono le città con più di 500K abitanti
+A: π(id) [σ(population>500k) city]
+-- B: seleziono da govern i politici che hanno guidato le città in A
+B: π(head) [govern ⋈(id=city) A] 
+-- C: tolgo da politician i politici in B
+C: [π(id) politician] - B
+
+
+-- trovare il nome delle città in cui non è utilizzato il dollaro come moneta (currency)
+
+country(id, name, continent (continent), currency) 
+city(id, name, country (country), population)
+
+-- A: paesi che usano il dollaro
+A: π(id) [σ(currency='dollaro') country]
+-- B: città appartenenti a paesi che non usano il dollaro: città che non sono in A 
+B: [π(country) city] - A
+-- join con city per trovare le città
+C: π(id) [ city * B ]
+
+-- alternativa (più efficiente)
+-- A: paesi che non usano il dollaro
+A: π(id) [σ(currency<>'dollaro') country]
+-- join con city per trovare le città
+B: π(id) [ city ⋈(city.country=country.id) A ]
+
+
+-- I paesi europei che non confinano con l’Italia
+country_borders(country_a, country_b)
+country(id, name, continent, currency)
+
+-- A: trovare i paesi che confinano con l’Itali
+-- considerare che il confinante con l'Italia può trovars in country_a o country_b
+A = π(country_b) [σ(country_a = 'ITA') country_borders]
+B = π(country_a) [σ(country_b = 'ITA') country_borders]
+C = A ∪ B 
+-- D: sottrarre C dall'elenco di tutti i country
+D = [π(id) [σ(continent = 'EU' country)]] - C 
+
+c_a    |  c_b 
+==============
+ITA         FRA
+AUS         ITA
+FRA         ITA
+
+-- i politici che hanno governato tutte le città di San Marino
+country(id, name, continent, currency)
+city(id, name, country (country), population)
+govern(city, head, election_year)
+
+-- A: trovare le città di San Marino
+A =  π(city.id) [ city ⋈(city.country=country.id) 
+                [ σ(name = 'San Marino') country ] ]
+
+-- B: divisione
+B =  [π(head, city) govern] ÷ [ρ(id->city) A] 
+
+
+-- Le città governate da più di un politico dopo il 2020 
+govern(city, head, election_year)
+
+-- A: trovo i record con election_year > 2020
+A = π(head, city) [σ(election_year > 2020) govern]
+-- B: metto in self-join A per trovare i record con lo stesso valore di city e diverso valore di head
+C = ρ(head->head') [ρ(city->city') A]
+B = π(city) [ A ⋈(city=city' ∧ head<>head') C ]
+
+
+A  
+====
+city    |   head  
+=================
+c1             p1
+c2             p2
+c1             p3
+
+-- Le città che sono state governate da politici sia di destra sia di sinistra
+-- politician(id, name, party) 
+-- govern(city, head)
+
+-- A: join fra goven e politician
+A = [ govern ⋈(head=id) politician ]
+
+-- B: città governate da politici di destra
+B = π(city) [ σ(party = 'repubblicano') A ]
+
+
+-- C: città governate da politici di sinistra
+C = π(city) [ σ(party = 'democratico') A ]
+
+-- D: città governate da politici sia di destra sia di sinistra
+D = B ∩ C 
+
+
+-- soluzione alternativa con join
+A(id, name, party, city, head)
+F = σ(party = 'democratico' ∨ party = 'repubblicano') A
+E = ρ(party->party') [ρ(city->city') F]
+soluzione =  A  ⋈(city=city' ∧ party<>party')  E 
+
+
+A 
+=
+id   |   name   |  party   |  city   |  head
+=============================================
+p1        X         rep.        c2        p1
+p2        Y         rep.        c1        p2
+p3        Z         dem.        c1        p3
+p1        X         rep.        c2        p1
