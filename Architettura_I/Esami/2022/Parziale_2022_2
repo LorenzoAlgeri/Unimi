@@ -1,0 +1,114 @@
+Università degli Studi di Milano - Corso Architettura degli elaboratori e delle reti I – Prof. Borghese
+Prima prova in itinere 24.11.2022 – versione B
+Cognome e nome dello studente: Matricola:
+Il compito è diviso in due sezioni: la prima sezione a risposta multiple e la seconda sezione a risposte aperte. Per
+raggiungere la sufficienza in questa prova occorre raggiungere almeno 6,5 punti con le risposte ai quesiti della prima
+sezione.
+SEZIONE 1 (Punteggio massimo: 10 punti. Per ogni risposta corretta +1 punto, per ogni riposta sbagliata, -0,25
+punti, per ogni risposta mancante 0 punti).
+Barrare la risposta esatta tra le 5 risposte possibili: A, B, C, D, E
+1. Y = ABC + !ABC + A!BC + AB!C + ABC + AB !C + A!B!C + !A!B!C + !A!BC + !AB!C è equivalente a:
+A. Y = A
+B. Y = B
+C. Y = C
+D. Y = 1
+E. Y = 0
+2. La funzione Y = (A XOR B) può essere implementata
+A. Con una SOP come: Y = !AB + !A!B
+B. Con una POS come: Y = (!A + !B)(A + B)
+C. Con una porta NAND come: Y = !(A NAND B)
+D. Con una porta NOR come: Y = !(A NOR B)
+E. Con un AND negato due volte: !(!(A AND B)
+3. La frequenza di un segnale (ad esempio il segnale di clock) è l’inverso del periodo
+A. Si’
+B. No
+C. Si’, ma solo se il segnale è una sinusoide
+D. Si’, ma solo se il segnale e’ una cosinusoide
+E. Si, ma solo se il segnale è il segnale di clock
+4. Il numero 234 non si può codificare in IEEE754.
+A. Vero
+B. Falso
+C. Vero se le parole sono a 32 bit
+D. Falso se le parole sono a 64 bit
+E. E’ un numero intero quindi non si può codificare in IEEE754.
+5. Data una funzione con 3 input, U1, U2, U3 e 2 output: Y1,Y2 determinare se:
+Y1 = U1 (!U2) + U2 U3
+Y2 = (U1 + U2)(U1 + !U3)
+Sia una forma cononica della funzione.
+A. Si’
+B. No
+C. Solo per Y1
+D. Solo per Y2
+E. Non si può decidere
+6. In una ALU, l’implementazione dell’istruzione di “set on less than”, richiede che
+A. La ALU svolga l’operazione di somma e il riporto del sommatore dell’ultimo bit venga portato in ingresso al
+multiplexer di uscita.
+B. La ALU svolga l’operazione di differenza e il bit di somma del sommatore dell’ultimo bit venga portato in
+ingresso al multiplexer in uscita.
+2
+C. La ALU svolga l’operazione di differenza e il riporto del sommatore dell’ultimo bit venga portato in ingresso al
+multiplexer di uscita.
+D. La ALU svolga l’operazione di somma e il bit di somma del sommatore dell’ultimo bit venga portato in ingresso
+al multiplexer di uscita.
+E. Mette a 1 l’uscita se il bit di segno dei due operandi e’ discorde.
+7. Può una sottrazione generare overflow?
+A. No, mai.
+B. Si’, ma solo se il primo termine è minore di zero.
+C. Si’, ma solo se il secondo termine e’ minore di zero.
+D. Si’, ma solo se i segni dei due operandi sono discordi
+E. Si’, ma solo se i segni dei due operandi sono concordi.
+8. L’implementazione di una funzione logica mediante maxtermini (senza semplificazione) ha la stessa complessità
+dell’implementazione mediante mintermini.
+A. Si’
+B. No
+C. Si’ solo se il numero di variabili in ingresso e’ pari.
+D. Si’ solo se il numero di mintermini e’ uguale al numero di maxtermini
+E. Si’ solo se la funzione è dispari
+9. Si può calcolare il cammino critico associato a un flip-flop?
+A. Si’
+B. No
+C. Si’ ma solo se è costituito da latch di tipo SR
+D. Si’ ma solo se e’ costituito da latch di tipo D
+E. Non ha senso perche’ il flip-flop commuta sul fronte di clock
+10. Un moltiplicatore HW svolge una moltiplicazione con un cammino critico che dipende
+A. Dall’ampiezza della parola
+B. Dal numero di bit diversi da zero del moltiplicatore
+C. Dal numero di bit diversi da zero del moltiplicando
+D. Dalla tecnologia utilizzata per implementare il moltiplicatore
+E. Dall’ampiezza della parola e dal cammino critico di un circuito che calcola l’overflow
+SEZIONE 2 (punteggio massimo 25 punti)
+1) [2] Dato un latch sincrono di tipo D la cui uscita è Q = 1 e l’ingresso e’ D= 1. Cosa succede quando D va a 0? Quanto
+tempo viene richiesto per la eventuale commutazione, supponendo che il tempo di commutazione di una porta logica a
+due ingressi sia 0,1 ps. Definire di quali tempi occorre tenere conto per dimensionare il clock di un’architettura. Scrivere
+la tabella di eccitazione di questo latch.
+2) [1] Spiegare chiaramente su quale principio si basi il sommatore ad anticipazione di riporto?
+3) [6] Costruire una macchina di Huffman che implementa la macchina a stati finiti capace di riconoscere la stringa “AZ “
+in un testo. Si noti che le 2 lettere “AZ” non devono essere precedute da uno spazio ma devono essere seguite da uno
+spazio. La macchina parte ad analizzare il testo dalla stringa vuota: “”. E’ possibile calcolare complessità e cammino
+critico? Che tipo di bistabili devono essere utilizzati? Quali altri bistabili conoscete? Quali sono le loro caratteristiche?
+4) [1] Spiegare perché la porta NOR è chiamata porta universale.
+5) [3] Codificare in IEEE754 in singola precisione il numero +2,75. Quale coppia di numeri codificati consecuitivamente
+in IEEE754 dista esattamente 1 unità? Perché? Qual è la risoluzione della codifica in virgola mobile, in virgola fissa e
+della codifica intera? Perché? Cosa si intende per codifica denormalizzata? Come si codifica la situazione NaN? E la
+situazione +/-oo?
+6) [1] Calcolare in complemento a 2, su 8 bit, la seguente operazione scritta in notazione decimale: 9 - 10. 
+3
+7) [10] Data la seguente tabella della verità:
+x y z | u1 u2
+_____|______
+000 | 0 X
+001 | 0 X
+010 | 0 X
+011 | 0 X
+100 | 0 1
+101 | 1 0
+110 | 1 1
+111 | 1 0
+a) Scrivere la funzione u1 nella prima e nella seconda forma canonica [2].
+b) Semplificare la prima forma canonica di u1 con le Mappe di Karnough [1].
+c) Ricondurre la prima forma canonica di u1 nella sua seconda forma canonica utilizzando la manipolazione
+algebrica [3].
+d) Scrivere l’espressione algebrica a complessità minima di u2, scegliendo opportunamente i valori indifferenti delle
+uscite. [2]
+e) Implementare le funzioni u1 e u2 con una PLA e con una ROM. [2].
+8) [1] Descrivere alcuni degli sviluppi più importanti nella storia delle Architetture.

@@ -16,6 +16,7 @@ Al momento sono presenti i seguenti corsi:
 
 - Programmazione I 💻
 - Matematica del Continuo 📈
+- Architettura degli Elaboratori I 🔌
 - Linguaggi Formali ed Automi 🔤
 
 ### Secondo Anno
@@ -24,9 +25,13 @@ Al momento sono presenti i seguenti corsi:
 - Sistemi Operativi ⚙️
 - Basi Di Dati 🗄️
 
-### Corsi Opzionali
+### Corsi A Scelta
 
 - Editoria Digitale 📰
+
+### Vari
+
+- Aspetti Etici, Legali, Sociali ed Economici Dell'Informatica ⚖️
 
 ### Note legali
 
